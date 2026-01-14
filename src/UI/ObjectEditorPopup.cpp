@@ -23,19 +23,19 @@ void ObjectEditorPopup::onApplyButton(CCObject* sender) {
         xPos = std::stof(xPosStr);
         yPos = std::stof(yPosStr);
         xScale = std::stof(xScaleStr);
-        yScale = std::stof(xScaleStr);
+        yScale = std::stof(yScaleStr);
         rotation = std::stof(rotationStr);
         zOrder = std::stoi(zOrderStr);
 
         selectedObj->setPosition({xPos, yPos});
         selectedObj->setRScaleX(xScale);
-        selectedObj->m_scaleX =xScale;
-        selectedObj->setRScaleX(yScale);
-        selectedObj->m_scaleY= yScale;
+        selectedObj->m_scaleX = xScale;
+        selectedObj->setRScaleY(yScale);
+        selectedObj->m_scaleY = yScale;
         selectedObj->setRotation(rotation);
         selectedObj->m_zOrder = zOrder;
     } catch (...) {
-        FLAlertLayer::create("Error", "Enter a valid number.", "Ok");
+        FLAlertLayer::create("Error", "Enter a valid number.", "Ok")->show();
         return;
     }
 }

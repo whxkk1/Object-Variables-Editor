@@ -1,2 +1,4 @@
+# 1.1.0
+- Fixed bizarre bugs.
 # 1.0.0
-- Edit this file to change your mod's changelog.
+- Release
