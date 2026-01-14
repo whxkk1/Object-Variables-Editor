@@ -60,7 +60,7 @@ void ObjectEditorPopup::onApplyButton(CCObject* sender) {
             std::isnan(yScale) || std::isinf(yScale) ||
             std::isnan(rotation) || std::isinf(rotation) //i hate this
         ) {
-            FLAlertLayer::create("Error", "Some of the values are <cr>nan</c> or <cr>inf</c>", "Ok")->show();
+            FLAlertLayer::create("Error", "Some of the values are either <cr>nan</c> or <cr>inf</c>", "Ok")->show();
             return;
         }
 
