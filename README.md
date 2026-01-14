@@ -1,2 +1,2 @@
 # ObjectVariablesEditor
-this mod allows you to edit object variables :pro:
+this mod allows you to edit object variables

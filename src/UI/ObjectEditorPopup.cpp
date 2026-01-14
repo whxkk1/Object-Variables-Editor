@@ -1,4 +1,5 @@
 #include "ObjectEditorPopup.hpp"
+#include "Geode/ui/TextInput.hpp"
 #include <stdexcept>
 #include <string>
 
@@ -22,10 +23,6 @@ CCNode* ObjectEditorPopup::createNode(const char* labelText, const std::string& 
 }
 
 void ObjectEditorPopup::onApplyButton(CCObject* sender) {
-    /*
-    code with a little inspiration from https://github.com/jojo989/edit-object-variables/blob/main/src/editObjectPopup.cpp
-    thanks jojo989
-    */
     auto xPosStr = xPosInput->getString();
     auto yPosStr = yPosInput->getString();
     auto xScaleStr = xScaleInput->getString();
