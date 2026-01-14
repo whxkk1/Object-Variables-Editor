@@ -1,5 +1,4 @@
 #include <Geode/modify/EditorUI.hpp>
-#include "Geode/cocos/cocoa/CCObject.h"
 #include "UI/ObjectEditorPopup.hpp"
 
 using namespace geode::prelude;
