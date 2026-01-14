@@ -8,10 +8,17 @@
 	},
 	"id": "whxkk_.object-variables-editor",
 	"name": "Object Variables Editor",
-	"version": "v1.1.0",
+	"version": "v1.0.0",
 	"developer": "whxkk_",
 	"description": "",
 	"dependencies": {
 		"geode.node-ids": ">=v1.20.0"
+	},
+	"resources": {
+		"spritesheets": {
+			"editButton": [
+				"resources/editButton.png"
+			]
+		}
 	}
 }

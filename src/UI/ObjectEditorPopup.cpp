@@ -1,8 +1,25 @@
 #include "ObjectEditorPopup.hpp"
+#include <stdexcept>
 #include <string>
 
 using namespace geode::prelude;
 
+CCNode* ObjectEditorPopup::createNode(const char* labelText, const std::string& textInputMessage, const std::string& textInputContent, geode::TextInput*& textInput) { //*& looks awful
+    CCNode* node = CCNode::create();
+    node->setContentSize({100.f, 60.f});
+
+    auto label = CCLabelBMFont::create(labelText, "bigFont.fnt");
+    label->setPosition({50.f, 50.f});
+    label->setScale(0.75f);
+    node->addChild(label);
+
+    textInput = geode::TextInput::create(100.f, textInputMessage);
+    textInput->setString(textInputContent);
+    textInput->setPosition(50.f, 20.f);
+    node->addChild(textInput);
+
+    return node;
+}
 
 void ObjectEditorPopup::onApplyButton(CCObject* sender) {
     auto xPosStr = xPosInput->getString();
@@ -11,6 +28,7 @@ void ObjectEditorPopup::onApplyButton(CCObject* sender) {
     auto yScaleStr = yScaleInput->getString();
     auto rotationStr = rotationInput->getString();
     auto zOrderStr = zOrderInput->getString();
+    auto layerStr = editorLayerInput->getString();
 
     float xPos = 0.f;
     float yPos = 0.f;
@@ -18,6 +36,7 @@ void ObjectEditorPopup::onApplyButton(CCObject* sender) {
     float yScale = 0.f;
     float rotation = 0.f;
     int zOrder = 0.f;
+    int layer = 0;
 
     try {
         xPos = std::stof(xPosStr);
@@ -26,6 +45,19 @@ void ObjectEditorPopup::onApplyButton(CCObject* sender) {
         yScale = std::stof(yScaleStr);
         rotation = std::stof(rotationStr);
         zOrder = std::stoi(zOrderStr);
+        layer = std::stoi(layerStr);
+
+        if(layer < 0 || layer > 32767) throw std::out_of_range("Layer is out of range.");
+
+        if(std::isnan(xPos) || std::isinf(xPos) ||
+            std::isnan(yPos) || std::isinf(yPos) ||
+            std::isnan(xScale) || std::isinf(xScale) ||
+            std::isnan(yScale) || std::isinf(yScale) ||
+            std::isnan(rotation) || std::isinf(rotation) //i hate this
+        ) {
+            FLAlertLayer::create("Error", "Some of the values are <cr>nan</c> or <cr>inf</c>", "Ok")->show();
+            return;
+        }
 
         selectedObj->setPosition({xPos, yPos});
         selectedObj->setRScaleX(xScale);
@@ -34,13 +66,22 @@ void ObjectEditorPopup::onApplyButton(CCObject* sender) {
         selectedObj->m_scaleY = yScale;
         selectedObj->setRotation(rotation);
         selectedObj->m_zOrder = zOrder;
-    } catch (...) {
-        FLAlertLayer::create("Error", "Enter a valid number.", "Ok")->show();
+        selectedObj->m_editorLayer = layer;
+    } catch (const std::out_of_range& e) {
+        FLAlertLayer::create("Error", "Some of the values are either too large or too small.", "Ok")->show();
+        return;
+    } catch(const std::invalid_argument& e) {
+        FLAlertLayer::create("Error", "Some of the values is not a number.", "Ok")->show();
+        return;
+    } catch(...) {
+        FLAlertLayer::create("Error", "Unknown error.", "Ok")->show();
         return;
     }
 }
 
 bool ObjectEditorPopup::setup() {
+
+    //if you are seeing this and have any suggestions, please let me know. i hate cocos ui
     m_noElasticity = true;
     this->setTitle("Object Editor");
 
@@ -50,6 +91,7 @@ bool ObjectEditorPopup::setup() {
     auto objYscale = selectedObj->getScaleY();
     auto objRotation = selectedObj->getObjectRotation();
     auto objZorder = selectedObj->getObjectZOrder();
+    auto objLayer = selectedObj->m_editorLayer;
 
     auto winSize = CCDirector::sharedDirector()->getWinSize();
 
@@ -64,96 +106,14 @@ bool ObjectEditorPopup::setup() {
     inputMenu->setLayout(inputLayout);
 
 
-    CCNode* xPosNode = CCNode::create();
-    xPosNode->setContentSize({100.f, 60.f});
+    inputMenu->addChild(createNode("X Pos", "X Pos", std::to_string(objXpos),xPosInput));
+    inputMenu->addChild(createNode("Y Pos", "Y Pos", std::to_string(objYpos),yPosInput));
+    inputMenu->addChild(createNode("X Scale", "X Scale", std::to_string(objXscale),xScaleInput));
+    inputMenu->addChild(createNode("Y Scale", "Y Scale", std::to_string(objYscale),yScaleInput));
+    inputMenu->addChild(createNode("Rotation", "Rotation", std::to_string(objRotation),rotationInput));
+    inputMenu->addChild(createNode("Z Order", "Z Order", std::to_string(objZorder),zOrderInput));
+    inputMenu->addChild(createNode("Layer", "Layer", std::to_string(objLayer),editorLayerInput));
 
-    xPosInput = TextInput::create(100.f, "xPos", "bigFont.fnt");
-    xPosInput->setString(std::to_string(objXpos));
-    xPosInput->setPosition({50.f, 20.f});
-    xPosNode->addChild(xPosInput);
-
-    auto xPosLabel = CCLabelBMFont::create("x Pos", "bigFont.fnt");
-    xPosLabel->setPosition({50.f, 50.f});
-    xPosLabel->setScale(0.75f);
-    xPosNode->addChild(xPosLabel);
-
-
-    CCNode* yPosNode = CCNode::create();
-    yPosNode->setContentSize({100.f, 60.f});
-
-    yPosInput = TextInput::create(100.f, "yPos", "bigFont.fnt");
-    yPosInput->setString(std::to_string(objYpos));
-    yPosInput->setPosition({50.f, 20.f});
-    yPosNode->addChild(yPosInput);
-
-    auto yPosLabel = CCLabelBMFont::create("y Pos", "bigFont.fnt");
-    yPosLabel->setPosition({50.f, 50.f});
-    yPosLabel->setScale(0.75f);
-    yPosNode->addChild(yPosLabel);
-
-
-    CCNode* xScaleNode = CCNode::create();
-    xScaleNode->setContentSize({100.f, 60.f});
-
-    xScaleInput = TextInput::create(100.f, "xScale", "bigFont.fnt");
-    xScaleInput->setString(std::to_string(objXscale));
-    xScaleInput->setPosition({50.f, 20.f});
-    xScaleNode->addChild(xScaleInput);
-
-    auto xScaleLabel = CCLabelBMFont::create("x Scale", "bigFont.fnt");
-    xScaleLabel->setPosition({50.f, 50.f});
-    xScaleLabel->setScale(0.75f);
-    xScaleNode->addChild(xScaleLabel);
-
-
-    CCNode* yScaleNode = CCNode::create();
-    yScaleNode->setContentSize({100.f, 60.f});
-
-    yScaleInput = TextInput::create(100.f, "yScale", "bigFont.fnt");
-    yScaleInput->setString(std::to_string(objYscale));
-    yScaleInput->setPosition({50.f, 20.f});
-    yScaleNode->addChild(yScaleInput);
-
-    auto yScaleLabel = CCLabelBMFont::create("y Scale", "bigFont.fnt");
-    yScaleLabel->setPosition({50.f, 50.f});
-    yScaleLabel->setScale(0.75f);
-    yScaleNode->addChild(yScaleLabel);
-
-
-    CCNode* rotationNode = CCNode::create();
-    rotationNode->setContentSize({100.f, 60.f});
-
-    rotationInput = TextInput::create(100.f, "Rotation", "bigFont.fnt");
-    rotationInput->setString(std::to_string(objRotation));
-    rotationInput->setPosition({50.f, 20.f});
-    rotationNode->addChild(rotationInput);
-
-    auto rotationLabel = CCLabelBMFont::create("Rotation", "bigFont.fnt");
-    rotationLabel->setPosition({50.f, 50.f});
-    rotationLabel->setScale(0.75f);
-    rotationNode->addChild(rotationLabel);
-
-
-    CCNode* zOrderNode = CCNode::create();
-    zOrderNode->setContentSize({100.f, 60.f});
-
-    zOrderInput = TextInput::create(100.f, "Z Order", "bigFont.fnt");
-    zOrderInput->setString(std::to_string(objZorder));
-    zOrderInput->setPosition({50.f, 20.f});
-    zOrderNode->addChild(zOrderInput);
-
-    auto zOrderLabel = CCLabelBMFont::create("Z Order", "bigFont.fnt");
-    zOrderLabel->setPosition({50.f, 50.f});
-    zOrderLabel->setScale(0.75f);
-    zOrderNode->addChild(zOrderLabel);
-
-
-    inputMenu->addChild(xPosNode);
-    inputMenu->addChild(yPosNode);
-    inputMenu->addChild(xScaleNode);
-    inputMenu->addChild(yScaleNode);
-    inputMenu->addChild(rotationNode);
-    inputMenu->addChild(zOrderNode);
 
 
     inputMenu->updateLayout();
