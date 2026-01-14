@@ -6,7 +6,7 @@ using namespace geode::prelude;
 class $modify(MyEditorUI, EditorUI) {
 	/*
 	https://github.com/matcool/geode-mods/blob/main/circle-tool/main.cpp
-	code i used as a reference to add the button to the editor.
+	code used as a reference to add the button to the editor.
 	thanks mat
 	*/
 	void createMoveMenu() {

@@ -23,6 +23,10 @@ CCNode* ObjectEditorPopup::createNode(const char* labelText, const std::string& 
 }
 
 void ObjectEditorPopup::onApplyButton(CCObject* sender) {
+    /*
+    a little inspiration from https://github.com/jojo989/edit-object-variables/blob/main/src/editObjectPopup.cpp
+    thanks jojo
+    */
     auto xPosStr = xPosInput->getString();
     auto yPosStr = yPosInput->getString();
     auto xScaleStr = xScaleInput->getString();
@@ -75,7 +79,7 @@ void ObjectEditorPopup::onApplyButton(CCObject* sender) {
         FLAlertLayer::create("Error", "Some of the values is not a number.", "Ok")->show();
         return;
     } catch(...) {
-        FLAlertLayer::create("Error", "Unknown error.", "Ok")->show();
+        FLAlertLayer::create("Error", "Unknown error.", "Ok")->show(); 
         return;
     }
 }
