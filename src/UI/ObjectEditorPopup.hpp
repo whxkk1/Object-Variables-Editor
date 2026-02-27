@@ -3,9 +3,7 @@
 #include "Geode/ui/TextInput.hpp"
 #include <string>
 
-
-
-class ObjectEditorPopup : public geode::Popup<> {
+class ObjectEditorPopup : public geode::Popup {
 private:
     CCNode* createNode(const char* labelText, const std::string& textInputMessage, const std::string& textInputContent, geode::TextInput*& textInput);
 protected:
@@ -16,7 +14,7 @@ protected:
     geode::TextInput* rotationInput = nullptr;
     geode::TextInput* zOrderInput = nullptr;
     geode::TextInput* editorLayerInput = nullptr;
-    bool setup() override;
+    bool init();
 
 public:
     static ObjectEditorPopup* create();
