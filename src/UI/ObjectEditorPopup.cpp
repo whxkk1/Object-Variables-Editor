@@ -1,6 +1,5 @@
 #include "ObjectEditorPopup.hpp"
 #include "Geode/ui/TextInput.hpp"
-#include <stdexcept>
 #include <string>
 
 using namespace geode::prelude;
@@ -45,16 +44,16 @@ void ObjectEditorPopup::onApplyButton(CCObject* sender) {
     auto zOrderStr = zOrderInput->getString();
     auto layerStr = editorLayerInput->getString();
 
-    double xPos = 0.f;
-    double yPos = 0.f;
+    float xPos = 0.f;
+    float yPos = 0.f;
     float xScale = 0.f;
     float yScale = 0.f;
     float rotation = 0.f;
     int zOrder = 0.f;
     short layer = 0;
 
-    auto xPosResult = geode::utils::numFromString<double>(xPosStr);
-    auto yPosResult = geode::utils::numFromString<double>(yPosStr);
+    auto xPosResult = geode::utils::numFromString<float>(xPosStr);
+    auto yPosResult = geode::utils::numFromString<float>(yPosStr);
     auto xScaleResult = geode::utils::numFromString<float>(xScaleStr);
     auto yScaleResult = geode::utils::numFromString<float>(yScaleStr);
     auto rotationResult = geode::utils::numFromString<float>(rotationStr);
@@ -80,8 +79,7 @@ void ObjectEditorPopup::onApplyButton(CCObject* sender) {
         return;
     }
 
-    selectedObj->m_positionX = xPosResult.unwrap();
-    selectedObj->m_positionY = yPosResult.unwrap();
+    selectedObj->setPosition({xPosResult.unwrap(), yPosResult.unwrap()});
     selectedObj->m_scaleX = xScaleResult.unwrap();
     selectedObj->m_scaleY = yScaleResult.unwrap(); //"real" hitbox??
     selectedObj->setScaleX(xScaleResult.unwrap());
@@ -98,9 +96,10 @@ bool ObjectEditorPopup::init() {
         return false;
     }
 
-    //if you are seeing this and have any suggestions, please let me know. i hate cocos ui
+    auto winSize = CCDirector::sharedDirector()->getWinSize();
     m_noElasticity = true;
     this->setTitle("Object Editor");
+
 
     auto objXpos = selectedObj->getPositionX();
     auto objYpos = selectedObj->getPositionY();
@@ -110,12 +109,11 @@ bool ObjectEditorPopup::init() {
     auto objZorder = selectedObj->getObjectZOrder();
     auto objLayer = selectedObj->m_editorLayer;
 
-    auto winSize = CCDirector::sharedDirector()->getWinSize();
-
 
     auto inputMenu = CCMenu::create();
     inputMenu->setContentSize({485.f, 150.f});
     inputMenu->setPosition(winSize / 2);
+
 
     auto inputLayout = RowLayout::create();
     inputLayout->setGap(15.f);
