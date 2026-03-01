@@ -16,16 +16,19 @@ void checkResult(const geode::Result<OkType, ErrType>& res, std::string& errStri
 
 CCNode* ObjectEditorPopup::createNode(const char* labelText, const std::string& textInputMessage, const std::string& textInputContent, geode::TextInput*& textInput) { //*& looks awful
     CCNode* node = CCNode::create();
-    node->setContentSize({100.f, 60.f});
+    float nodeWidth = width / 4.75f;
+    float nodeHeight = height / 4.25f;
+    node->setContentSize({nodeWidth, nodeHeight});
 
     auto label = CCLabelBMFont::create(labelText, "bigFont.fnt");
-    label->setPosition({50.f, 50.f});
+
+    label->setPosition({nodeWidth / 2, nodeWidth * 0.4f});
     label->setScale(0.75f);
     node->addChild(label);
 
-    textInput = geode::TextInput::create(100.f, textInputMessage);
+    textInput = geode::TextInput::create(nodeWidth, textInputMessage);
     textInput->setString(textInputContent);
-    textInput->setPosition(50.f, 20.f);
+    textInput->setPosition(nodeWidth / 2, nodeHeight * 0.2f);
     node->addChild(textInput);
 
     return node;
@@ -90,15 +93,31 @@ void ObjectEditorPopup::onApplyButton(CCObject* sender) {
 
 }
 
+void ObjectEditorPopup::onInfoButton(CCObject* sender) {
+    FLAlertLayer::create("Info", "X Pos, Y Pos, X Scale, Y Scale and Rotation: float32.\nZ Order: int32.\nLayer: int16.", "Ok")->show();
+}
+
 bool ObjectEditorPopup::init() {
 
-    if(!geode::Popup::init(485.f, 230.f)) {
+    auto winSize = CCDirector::get()->getWinSize();
+    width = winSize.width * 0.85f;
+    height = winSize.height * 0.7f;
+    if(!geode::Popup::init(width, height)) {
         return false;
     }
 
-    auto winSize = CCDirector::sharedDirector()->getWinSize();
     m_noElasticity = true;
     this->setTitle("Object Editor");
+
+    auto infoMenu = CCMenu::create();
+    infoMenu->ignoreAnchorPointForPosition(false);
+    infoMenu->setScaledContentSize({width, height});  
+    infoMenu->setPosition(winSize / 2); //why it took me so long to center
+
+    infoButton = CCMenuItemSpriteExtra::create(CCSprite::createWithSpriteFrameName("GJ_infoIcon_001.png"), this, menu_selector(ObjectEditorPopup::onInfoButton));
+    infoButton->setPosition({width - width * 0.05f, height - height * 0.1f});
+
+    infoMenu->addChild(infoButton);
 
 
     auto objXpos = selectedObj->getPositionX();
@@ -111,8 +130,9 @@ bool ObjectEditorPopup::init() {
 
 
     auto inputMenu = CCMenu::create();
-    inputMenu->setContentSize({485.f, 150.f});
-    inputMenu->setPosition(winSize / 2);
+    inputMenu->setContentSize({width, height});
+    inputMenu->setPositionX(winSize.width / 2);
+    inputMenu->setPositionY(winSize.height * 0.525f);
 
 
     auto inputLayout = RowLayout::create();
@@ -133,6 +153,7 @@ bool ObjectEditorPopup::init() {
 
     inputMenu->updateLayout();
     this->addChild(inputMenu);
+    this->addChild(infoMenu);
 
     auto buttonMenu = CCMenu::create();
     auto btn = CCMenuItemSpriteExtra::create(ButtonSprite::create("Apply"),
