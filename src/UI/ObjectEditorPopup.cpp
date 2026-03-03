@@ -15,6 +15,7 @@ void checkResult(const geode::Result<OkType, ErrType>& res, std::string& errStri
 }
 
 CCNode* ObjectEditorPopup::createNode(const char* labelText, const std::string& textInputMessage, const std::string& textInputContent, geode::TextInput*& textInput) { //*& looks awful
+    
     CCNode* node = CCNode::create();
     float nodeWidth = width / 4.75f;
     float nodeHeight = height / 4.25f;
@@ -23,7 +24,7 @@ CCNode* ObjectEditorPopup::createNode(const char* labelText, const std::string& 
     auto label = CCLabelBMFont::create(labelText, "bigFont.fnt");
 
     label->setPosition({nodeWidth / 2, nodeWidth * 0.4f});
-    label->setScale(0.75f);
+    if(label->getContentWidth() > nodeWidth * 0.85f) label->setScale(nodeWidth * 0.85f / label->getContentWidth());
     node->addChild(label);
 
     textInput = geode::TextInput::create(nodeWidth, textInputMessage);
